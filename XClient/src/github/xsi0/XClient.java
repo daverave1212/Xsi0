@@ -62,15 +62,19 @@ public class XClient {
 	
 	public static void switchToGameUI() {
 		
-		
+		/* Se schimba din "Play" in interfata cu 9 patrate */
 		
 	}
 	
 	public static void freezeUI() {
 		
+		/* toate butonaele se blocheaza */
 		
 	}
 	
-	public static void unfreezeUI() {}
+	public static void unfreezeUI() {
 	
+		/* toate butoanele se deblocheaza */
+
+	}
 }
