@@ -3,6 +3,9 @@ package github.xsi0;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
+import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 
 public class XClient {
 
@@ -53,11 +56,21 @@ public class XClient {
 		printStream	= new PrintStream(connection.getOutputStream());
 		scanner		= new Scanner(connection.getInputStream());
 	}
-	
+
+	private static void buildPane(Container pane){
+		//Code goes here.
+	}
+
 	public static void initializeUI() {
-		
-		/* Aici vine codul pentru tot ce tine de interfata grafica */
-		
+		JFrame frame = new JFrame("X si O");//creates a window
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//Setting up content
+		buildPane(frame.getContentPane());
+
+		//Display the window.
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
 	public static void switchToGameUI() {
