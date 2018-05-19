@@ -58,7 +58,19 @@ public class XClient {
 	}
 
 	private static void buildPane(Container pane){
-		//Code goes here.
+		JButton[] button = new JButton[9];//the grid
+		pane.setLayout(new GridBagLayout());//
+
+		for(int i=0;i<9;i++){
+			button[i]=new JButton();
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = i%3;
+			c.gridy = i/3;
+			pane.add(button, c);
+		}
+
+
+
 	}
 
 	public static void initializeUI() {
