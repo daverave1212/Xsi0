@@ -21,7 +21,8 @@ public class XClient {
 	public static int lastReceivedMessage;
 	
 	public static int myPiece = N;
-	
+	private static Container pane;
+
 	public static void send(int signal) {
 		printStream.println(signal);}
 	
@@ -57,7 +58,7 @@ public class XClient {
 		scanner		= new Scanner(connection.getInputStream());
 	}
 
-	private static void buildPane(Container pane){
+	private static void buildGrid(Container pane){
 		JButton[] button = new JButton[9];//the grid
 		pane.setLayout(new GridBagLayout());//
 
@@ -65,11 +66,12 @@ public class XClient {
 			button[i]=new JButton();
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = i%3;
+			c.weightx=0.5;
+			c.weighty=0.5;
+			c.fill=GridBagConstraints.BOTH;
 			c.gridy = i/3;
-			pane.add(button, c);
+			pane.add(button[i], c);
 		}
-
-
 
 	}
 
@@ -78,7 +80,7 @@ public class XClient {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		//Setting up content
-		buildPane(frame.getContentPane());
+		buildGrid(frame.getContentPane());
 
 		//Display the window.
 		frame.pack();
