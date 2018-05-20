@@ -80,17 +80,19 @@ public class XClient {
 	}
 
 	private static void buildGrid(JPanel game){
-		JButton[] button = new JButton[9];//the grid
+		GameButton[] button = new GameButton[9];//the grid
 		game.setLayout(new GridBagLayout());//
 
 		for(int i=0;i<9;i++){
-			button[i]=new JButton();
+			button[i]=new GameButton();
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = i%3;
+			c.gridy = i/3;
+			button[i].setRow(i%3);
+			button[i].setCol(i/3);
 			c.weightx=0.5;
 			c.weighty=0.5;
 			c.fill=GridBagConstraints.BOTH;
-			c.gridy = i/3;
 			game.add(button[i], c);
 		}
 
@@ -129,14 +131,16 @@ public class XClient {
 	}
 	
 	public static void freezeUI() {
-		
+
 		/* toate butonaele se blocheaza */
-		
+		System.out.println("FREEZE");
+		GameGrid.FROZEN=true;
 	}
 	
 	public static void unfreezeUI() {
 	
 		/* toate butoanele se deblocheaza */
-
+		System.out.println("unFREEZE");
+		GameGrid.FROZEN=false;
 	}
 }
