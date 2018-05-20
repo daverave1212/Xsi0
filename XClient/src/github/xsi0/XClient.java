@@ -90,19 +90,29 @@ public class XClient {
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = i%3;//linia din grid
 			c.gridy = i/3;
-			button[i].setRow(i%3);
-			button[i].setCol(i/3);//coloana din grid, stocata in obiect
+			button[i].setRow(i/3);//Cand punem coordonatele in obiect, ele trebuiesc
+			button[i].setCol(i%3);//inversate, deoarece gridx indica coloana,nu linia.
 			c.weightx=0.5;
 			c.weighty=0.5;
 			c.fill=GridBagConstraints.BOTH;//resizeble
 			game.add(button[i], c);
 		}
 
+		JMenuBar menuBar = new JMenuBar();
+		BackButton exit=new BackButton();
+		exit.setText("Back");
+		menuBar.add(exit);
+		GridBagConstraints m = new GridBagConstraints();
+		m.gridx=0;
+		m.gridy=3;
+		m.fill=GridBagConstraints.HORIZONTAL;
+		game.add(menuBar,m);
+
 	}
 
 	public static void initializeUI() {
 		frame = new JFrame("X si O");//creates a window
-		frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);//ca sa nu putem inchide jocul fara sa revenim
+		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);//ca sa nu putem inchide jocul fara sa revenim
         //la ecranul principal cu play
         //TODO: un buton de go back pe grid in loc de close, ca sa putem pune cod la revenirea din joc.
 		frame.setLayout(new CardLayout());
@@ -130,6 +140,8 @@ public class XClient {
 		frame.setSize(310,210);
 		frame.setSize(300,200);
 
+		frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
 
 
 	}
@@ -137,8 +149,8 @@ public class XClient {
 	public static void freezeUI() {
 
 		/* toate butonaele se blocheaza, teoretic */
-		System.out.println("FREEZE");
 		GameGrid.FROZEN=true;
+		System.out.println(GameGrid.FROZEN);
 	}
 	
 	public static void unfreezeUI() {
@@ -146,5 +158,17 @@ public class XClient {
 		/* toate butoanele se deblocheaza, teoretic */
 		System.out.println("unFREEZE");
 		GameGrid.FROZEN=false;
+	}
+
+	public static void switchToMainUI(){
+		System.out.println("Works?");
+		JPanel aux=(JPanel)frame.getContentPane().getComponent(0);
+
+		GameGrid.FROZEN=false;
+
+		frame.remove(aux);
+		frame.add(play,PLAY);
+
+		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 }
