@@ -5,17 +5,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class GameButton extends JButton{
-    private int xOrO;
+    private int xOrO;//semnul de pe casuta
     private int row;
     private int col;
     GameButton(){
         xOrO=XClient.N;
-        addMouseListener(new MouseAdapter() {
+        addMouseListener(new MouseAdapter() {//asa am vazut ca am putea pune eventu de mouse
             public void mouseClicked (MouseEvent e){
                 System.out.println(row);
                 System.out.println(col);
-                if(xOrO==XClient.N) {
-                    if (!GameGrid.FROZEN) {
+                if(xOrO==XClient.N) {//daca nu e pus nimic in casuta
+                    if (!GameGrid.FROZEN) {//si e tura noastra
                         //XClient.clickedOnSquare(row,col);
                         XClient.freezeUI();
                     }

@@ -68,31 +68,33 @@ public class XClient {
 	}
 
 	private static void setupPlay(){
+	    //Aici punem butonul de play
 		PlayButton go=new PlayButton();
 		go.setText("Play");
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx=0;
 		c.gridy=0;
-		c.weightx=0.5;
+		c.weightx=0.5;//idk tbh
 		c.weighty=0.5;
-		c.fill=GridBagConstraints.BOTH;
+		c.fill=GridBagConstraints.BOTH;//resizeabe
 		play.add(go,c);
 	}
 
 	private static void buildGrid(JPanel game){
+	    //Asta ne construieste grid-ul propriu zis de X si 0
 		GameButton[] button = new GameButton[9];//the grid
-		game.setLayout(new GridBagLayout());//
+		game.setLayout(new GridBagLayout());
 
 		for(int i=0;i<9;i++){
 			button[i]=new GameButton();
 			GridBagConstraints c = new GridBagConstraints();
-			c.gridx = i%3;
+			c.gridx = i%3;//linia din grid
 			c.gridy = i/3;
 			button[i].setRow(i%3);
-			button[i].setCol(i/3);
+			button[i].setCol(i/3);//coloana din grid, stocata in obiect
 			c.weightx=0.5;
 			c.weighty=0.5;
-			c.fill=GridBagConstraints.BOTH;
+			c.fill=GridBagConstraints.BOTH;//resizeble
 			game.add(button[i], c);
 		}
 
@@ -100,15 +102,17 @@ public class XClient {
 
 	public static void initializeUI() {
 		frame = new JFrame("X si O");//creates a window
-		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);//ca sa nu putem inchide jocul fara sa revenim
+        //la ecranul principal cu play
+        //TODO: un buton de go back pe grid in loc de close, ca sa putem pune cod la revenirea din joc.
 		frame.setLayout(new CardLayout());
 
 		play = new JPanel();
 		play.setLayout(new GridBagLayout());
-		setupPlay();
+		setupPlay();//ne construieste ecranul principal
         frame.add(play,PLAY);
 
-		//Display the window.
+		//Displays the window
 		frame.setSize(300,200);
 		frame.setVisible(true);
 
@@ -132,14 +136,14 @@ public class XClient {
 	
 	public static void freezeUI() {
 
-		/* toate butonaele se blocheaza */
+		/* toate butonaele se blocheaza, teoretic */
 		System.out.println("FREEZE");
 		GameGrid.FROZEN=true;
 	}
 	
 	public static void unfreezeUI() {
 	
-		/* toate butoanele se deblocheaza */
+		/* toate butoanele se deblocheaza, teoretic */
 		System.out.println("unFREEZE");
 		GameGrid.FROZEN=false;
 	}
