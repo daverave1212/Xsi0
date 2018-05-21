@@ -35,6 +35,7 @@ public class Game {
 		Thread readFromP1 = new Thread(new Runnable() {
 			public void run() {
 				while(true) {
+
 					System.out.println("Waiting to receive any signal from p1...");
 					p1Signal = p1.receive();
 					System.out.println("Signal received from p1!");
@@ -60,6 +61,7 @@ public class Game {
 					System.out.println("Waiting to receive any signal from p2...");
 					p2Signal = p2.receive();
 					System.out.println("Signal received from p2!");
+
 					if(p2Signal == Signals.MADEMOVE) {		// After player makes a move,
 						System.out.print("P2 made a move: ");
 						int matrixRowIndex = p2.receive();	// it sends the indices for the
