@@ -10,9 +10,11 @@ public class AcceptSocketThread extends Thread{
 		for(int i = 0; i < XServer.maxPlayers; i++) {
 			System.out.println("Trying to find player " + i);
 			try {
+				System.out.println("Waiting for any player to connect...");
 				XServer.clientConnections[i] = XServer.serverSocket.accept();
 				System.out.println("Player found! Setting up...");
 				XServer.nPlayers++;
+				System.out.println("Player connected! Setting up...");
 				XServer.setupLastPlayer();
 			} catch (Exception e) {
 				System.out.println("ERROR: Something went wrong...");

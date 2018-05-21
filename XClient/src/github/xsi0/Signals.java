@@ -12,6 +12,7 @@ public class Signals {
 	public static final int STARTGAME	= 2;	// Switches client's interface to game one
 	public static final int YOURTURN	= 3;	// unfreezes UI for that player
 	
+	public static final int UPDATEBOARD	= 1337;
 	/* From client to server */
 	public static final int MADEMOVE  = 10;
 	

@@ -12,10 +12,11 @@ public class XServer {
 		public static int maxPlayers	= 10;
 		public static int nPlayers		= 0;
 		public static int nActiveGames	= 0;
-		public static int portNumber	= 8080;
+
+		public static int portNumber = 8080;
 		
-		public static void startServer() throws Exception {
-			System.out.println("Starting server on port " + portNumber);
+		public static void startServer() throws Exception{
+
 			serverSocket		= new ServerSocket(portNumber);
 			System.out.println("Initializing empty Socket array...");
 			clientConnections	= new Socket[maxPlayers];
@@ -23,24 +24,37 @@ public class XServer {
 			connectedPlayers	= new Player[maxPlayers];
 			System.out.println("Initializing empty Game array");
 			activeGames			= new Game[maxPlayers/2];
+			System.out.println("Server successfully started!");
 			/* Accepta in continuu conexiuni */
 			AcceptSocketThread acceptConnections = new AcceptSocketThread();
-			acceptConnections.start();	}
+			System.out.println("Starting to accept players...");
+			acceptConnections.start();
+		}
+		
+		public static void main(String[] args) throws Exception{
+			startServer();
+		}
 		
 		public static void setupLastPlayer() throws Exception{
 			connectedPlayers[nPlayers - 1] = new Player();
-			System.out.println("Created player " + (nPlayers - 1));
+			System.out.println("New Player successfully created...");
+
 			Player lastAcceptedPlayer = connectedPlayers[nPlayers - 1];
 			System.out.println("Setting it's state to WAITING in server...");
 			lastAcceptedPlayer.setState(PlayerStates.WAITING);
+			System.out.println("Pinging client.");
+			//lastAcceptedPlayer.send(1337);
+			System.out.println("Set state to WAITING (in server only)");
 			// sendMessageToLastPlayer("Please wait for a match")
 			System.out.println("Matching players...");
 			XServer.matchPlayers();
 		}
 		
 		public static void matchPlayers() throws Exception {
+			System.out.println("Trying to find 2 players to match...");
 			if(XServer.nPlayers <= 1) {
-				System.out.println("There are not enough players to match");
+				System.out.println("Therea are not enough players connected.");
+
 				/* There are not enough players to match */}
 			else {	// Cauta primii 2 playeri available
 				int firstFoundPlayerIndex = -1;
@@ -56,22 +70,23 @@ public class XServer {
 				Player secondPlayer	= XServer.connectedPlayers[secondFoundPlayerIndex];
 				
 				if(secondFoundPlayerIndex == -1) {
-					System.out.println("No other waiting players found");
+					System.out.println("There is no other available player atm.");
 					/* Nu sunt destui playeri valabili */}
 				else {
-					System.out.println("Found players!");
-					System.out.println("Player 1:" + firstFoundPlayerIndex);
-					System.out.println("Player 2:" + secondFoundPlayerIndex);
-					System.out.println("Creating new game...");
-					XServer.activeGames[nActiveGames] = new Game();
+					System.out.println("Match found!");
+					System.out.println("p1 = " + firstFoundPlayerIndex);
+					System.out.println("p2 = " + secondFoundPlayerIndex);
 					Game lastCreatedGame = XServer.activeGames[nActiveGames];
 					System.out.println("Setting player states in server");
 					firstPlayer	.setState(PlayerStates.PLAYING);
 					secondPlayer.setState(PlayerStates.PLAYING);
 					System.out.println("initializing game...");
 					lastCreatedGame.initialize(firstFoundPlayerIndex, secondFoundPlayerIndex);
-					lastCreatedGame.start();}}}
-		
+					System.out.println("Starting game...");
+					lastCreatedGame.start();
+					
+				}
+			}
 		public static void main(String[] args) throws Exception{
 			XServer.startServer();
 			// TESTED AND WORKS AS INTENDED

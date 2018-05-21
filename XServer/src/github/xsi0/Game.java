@@ -35,15 +35,19 @@ public class Game {
 		Thread readFromP1 = new Thread(new Runnable() {
 			public void run() {
 				while(true) {
-					System.out.println("");
+
 					System.out.println("Waiting to receive any signal from p1...");
 					p1Signal = p1.receive();
-					System.out.println("A signal received from p1!");
+					System.out.println("Signal received from p1!");
 					if(p1Signal == Signals.MADEMOVE) {		// After player makes a move,
 						int matrixRowIndex = p1.receive();	// it sends the indices for the
 						int matrixColIndex = p1.receive();	// row and col it ticked
 						p1.inGameState = PlayerStates.ENEMYSTURN;	// Changes state FOR SERVER ONLY
 						p2.inGameState = PlayerStates.MAKINGMOVE;	// The client changes the state on its own
+						p2.send(Signals.UPDATEBOARD);
+						p2.send(matrixRowIndex);
+						p2.send(matrixColIndex);
+						p2.send(O);
 						p2.send(Signals.YOURTURN);					// Unfreezes that player's UI
 						updateBoard(matrixRowIndex, matrixColIndex, O);}
 					else {
@@ -56,14 +60,21 @@ public class Game {
 				while(true) {
 					System.out.println("Waiting to receive any signal from p2...");
 					p2Signal = p2.receive();
-					System.out.println("A signal received from p2!");
+					System.out.println("Signal received from p2!");
+
 					if(p2Signal == Signals.MADEMOVE) {		// After player makes a move,
+						System.out.print("P2 made a move: ");
 						int matrixRowIndex = p2.receive();	// it sends the indices for the
 						int matrixColIndex = p2.receive();	// row and col it ticked
+						System.out.println(matrixRowIndex + ", " + matrixColIndex);
 						p2.inGameState = PlayerStates.ENEMYSTURN;
 						p1.inGameState = PlayerStates.MAKINGMOVE;
+						p1.send(Signals.UPDATEBOARD);
+						p1.send(matrixRowIndex);
+						p1.send(matrixColIndex);
+						p1.send(X);
 						p1.send(Signals.YOURTURN);
-						updateBoard(matrixRowIndex, matrixColIndex, O);}
+						updateBoard(matrixRowIndex, matrixColIndex, X);}
 					else {
 						/* Concede? Exit? End Game? */
 						System.out.println("Game ended weirdly. Closing thread.");

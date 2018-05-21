@@ -12,13 +12,16 @@ public class GameButton extends JButton{
         xOrO=XClient.N;
         addMouseListener(new MouseAdapter() {//asa am vazut ca am putea pune eventu de mouse
             public void mouseClicked (MouseEvent e){
+            	System.out.println("From GameButton:");
                 System.out.println(row);
                 System.out.println(col);
                 if(xOrO==XClient.N) {//daca nu e pus nimic in casuta
+                	System.out.println("xOrO is N");
                     if (!GameGrid.FROZEN) {//si e tura noastra
-                        //XClient.clickedOnSquare(row,col);
+                    	System.out.println("Game grid is not FROZEN");
+                        XClient.clickedOnSquare(row,col);
                         XClient.freezeUI();
-                    }
+                    } else {System.out.println("Game grid is FROZEN");}
                 }
             }
         });

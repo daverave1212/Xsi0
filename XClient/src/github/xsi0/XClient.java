@@ -1,6 +1,5 @@
 package github.xsi0;
 
-import com.sun.xml.internal.ws.handler.ServerLogicalHandlerTube;
 
 import java.io.PrintStream;
 import java.net.Socket;
@@ -31,7 +30,28 @@ public class XClient {
 	public static int myPiece = N;
 	private static JFrame frame;
 	private static JPanel play;
+	private static JPanel grid;
+	
+	public static GameButton[] button;
+	
+	public static int[][] gameBoard = new int[][] {
+		{N, N, N},
+		{N, N, N},
+		{N, N, N}};
 
+	public static void updateBoard(int rindex, int cindex, int piece) {
+		System.out.println("Updating board...");
+		String buttonText = "Error :<";
+		if(piece == X) {buttonText = "XXXXXX";}
+		if(piece == O) {buttonText = "OOOOOOO";}
+		if(piece == N) {System.out.println("AYYYY COWBOY THIS AINT WORKED");}
+		
+		button[rindex * 3 + cindex].setText("XXXX");
+		frame.setSize(310,210);
+		frame.setSize(300,200);
+		
+		gameBoard[rindex][cindex] = piece;}
+		
 	public static void send(int signal) {
 		printStream.println(signal);}
 	
@@ -40,11 +60,16 @@ public class XClient {
 		return receivedSignal;}
 	
 	public static void clickedOnSquare(int rowIndex, int colIndex) {
+		updateBoard(rowIndex, colIndex, myPiece);
 		send(Signals.MADEMOVE);
 		send(rowIndex);
-		send(colIndex);}
+		send(colIndex);
+		System.out.println("Clicked on square: " + rowIndex + ", " + colIndex);
+		}
 	
 	public static void startReceiving() {
+	//	int pinged = receive();
+	//	System.out.println("Server pinged client successfully. Now the real fun begins.");
 		Thread receivingSignals = new Thread(new Runnable() {
 			public void run() {
 				while(true) {
@@ -52,22 +77,34 @@ public class XClient {
 					lastReceivedMessage = receive();
 					System.out.print("Received: ");
 					if(lastReceivedMessage == Signals.SETPIECE0) {
-						System.out.println("SETPIECE0");
+
+						System.out.println("My piece is O");
 						myPiece = O;}
 					if(lastReceivedMessage == Signals.SETPIECEX) {
-						System.out.println("SETPIECEX");
+						System.out.println("My piece is X");
 						myPiece = X;}
 					if(lastReceivedMessage == Signals.STARTGAME) {
-						System.out.println("STARTGAME");
+						System.out.println("Game started!");
 						switchToGameUI();}
 					if(lastReceivedMessage == Signals.YOURTURN) {
-						System.out.println("YOURTURN");
-						unfreezeUI();}}}});
+						System.out.println("MY TURN NOW!!!!");
+						unfreezeUI();}
+					if(lastReceivedMessage == Signals.UPDATEBOARD) {
+						System.out.print("Update board: ");
+						int rowIndex = receive();
+						int colIndex = receive();
+						System.out.println(rowIndex + ", " + colIndex);
+						int recPiece = receive();
+						System.out.print("   (alos received a piece)");
+						XClient.updateBoard(rowIndex, colIndex, recPiece);
+					}
+				}}});
+    
 		receivingSignals.start();
 	}
-	
+=
+
 	public static void startClient() throws Exception{
-		System.out.println("Starting client. Forming connection to server...");
 		connection	= new Socket(ip, port);
 		System.out.println("Connection success! Starting PrintStream...");
 		printStream	= new PrintStream(connection.getOutputStream());
@@ -82,8 +119,10 @@ public class XClient {
 	public static void main(String[] args) throws Exception{
 		startClient();
 		// TESTED AND WORKS AS INTENDED
+    		XClient.initializeUI();
 	}
 
+	// GUI
 	private static void setupPlay(){
 	    //Aici punem butonul de play
 		PlayButton go=new PlayButton();
@@ -99,7 +138,7 @@ public class XClient {
 
 	private static void buildGrid(JPanel game){
 	    //Asta ne construieste grid-ul propriu zis de X si 0
-		GameButton[] button = new GameButton[9];//the grid
+		button = new GameButton[9];//the grid
 		game.setLayout(new GridBagLayout());
 
 		for(int i=0;i<9;i++){
@@ -114,7 +153,6 @@ public class XClient {
 			c.fill=GridBagConstraints.BOTH;//resizeble
 			game.add(button[i], c);
 		}
-
 		JMenuBar menuBar = new JMenuBar();
 		BackButton exit=new BackButton();
 		exit.setText("Back");
@@ -124,7 +162,6 @@ public class XClient {
 		m.gridy=3;
 		m.fill=GridBagConstraints.HORIZONTAL;
 		game.add(menuBar,m);
-
 	}
 	
 	public static void initializeUI() {
@@ -142,36 +179,30 @@ public class XClient {
 		//Displays the window
 		frame.setSize(300,200);
 		frame.setVisible(true);
-
 	}
 	
 	public static void switchToGameUI() {
 		
 		/* Se schimba din "Play" in interfata cu 9 patrate */
-		JPanel grid = new JPanel();
+		grid = new JPanel();
 		buildGrid(grid);
 		frame.remove(play);
 		frame.add(grid,GRID);
 
 		//Workaround, nu afiseaza grid-ul fara un resize.
+		//frame.repaint();
 		frame.setSize(310,210);
 		frame.setSize(300,200);
-
 		frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-
-
 	}
 	
 	public static void freezeUI() {
-
 		/* toate butonaele se blocheaza, teoretic */
 		GameGrid.FROZEN=true;
 		System.out.println(GameGrid.FROZEN);
 	}
 	
 	public static void unfreezeUI() {
-	
 		/* toate butoanele se deblocheaza, teoretic */
 		System.out.println("unFREEZE");
 		GameGrid.FROZEN=false;
@@ -191,6 +222,5 @@ public class XClient {
 	
 	
 	
-	
-	
+
 }
