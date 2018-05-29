@@ -20,10 +20,16 @@ public class XServer extends HttpServlet {
         super();}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("This was from doGet() ");
+		System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
+		try {
+			handleRequest(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response){
+		System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
 		try {
 			handleRequest(request, response);
 		} catch (Exception e) {
@@ -32,8 +38,19 @@ public class XServer extends HttpServlet {
 	}
 	
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		String username = request.getParameter("username");
 		String action	= request.getParameter("action");
+		if(action.equals( "RESET")) {
+			playersConnected = new HashMap<String, Player>();
+			playersConnectedUsernames = new ArrayList<String>();
+			return;
+		}
+		if(action.equals("USERS")) {
+			response.getWriter().append("" + playersConnectedUsernames.size());
+			return;
+		}
+		String username = request.getParameter("username");
+		
+		System.out.print("Players: " + playersConnectedUsernames.size() + " ");
 		Player thisPlayer;
 		if(action.equals( Net.LOGIN )){
 			String password = request.getParameter("password");
@@ -84,7 +101,7 @@ public class XServer extends HttpServlet {
 	 public static void checkAndValidateLogin(String username, String password, HttpServletResponse response) throws Exception{
 		boolean isLoginAccepted = Databases.validateLogin(username, password);
 		if(isLoginAccepted) {
-			response.getWriter().append(Net.YES);
+			response.getWriter().append(Net.LOGINACCEPTED);
 			connectPlayer(username);
 			}
 		else {

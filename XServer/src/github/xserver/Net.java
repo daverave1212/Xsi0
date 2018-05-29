@@ -4,7 +4,7 @@ public class Net {
 
 	// Requests from client to server
 	public static String LOGIN			= "LOGIN";
-	public static String ISGAMEREADY	= "ISGANEREADY";
+	public static String ISGAMEREADY	= "ISGAMEREADY";
 	public static String MYPIECE		= "MYPIECE";
 	public static String ISMYTURN		= "ISMYTURN";
 	public static String GETBOARD		= "GETBOARD";

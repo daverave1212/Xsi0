@@ -8,10 +8,12 @@
 </head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
+
 function submitForm() {
+	var parameters = document.getElementById("in").value;
 	alert("Submitting");
     var http = new XMLHttpRequest();
-    http.open("POST", "http://localhost:8080/XServer/XServer", true);
+    http.open("POST", "http://localhost:8080/XServer/XServer?" + parameters, true);
     http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     var params = "search=" + "HELLOIMAPARAMETEUR"; // probably use document.getElementById(...).value
     http.send(params);
@@ -19,10 +21,12 @@ function submitForm() {
         alert(http.responseText);
     }
 }
+
 </script>
 <body>
 	this is localhost:8080/XServer
 	Ello woldasdasdasd
-	<button onclick = "submitForm()">Test Ajax</button>
+	<input id = "in" value = "">
+	<button onclick = "submitForm()">Submite</button>
 </body>
 </html>
