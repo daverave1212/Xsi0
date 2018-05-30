@@ -58,9 +58,9 @@ public class XClient {
 	public static void updateInterfaceButtons() {
 		for(int i = 0; i<3; i++) {
 			for(int j = 0; j<3; j++) {
-				if(board[i][j] == N) {client.xoButtons[i][j].setText("N");}
-				if(board[i][j] == X) {client.xoButtons[i][j].setText("X");}
-				if(board[i][j] == O) {client.xoButtons[i][j].setText("O");}}}
+				if(board[i][j] == N) {client.getButton(i, j).setText("N");}
+				if(board[i][j] == X) {client.getButton(i, j).setText("X");}
+				if(board[i][j] == O) {client.getButton(i, j).setText("O");}}}
 		client.revalidate();
 		client.repaint();}
 	
@@ -91,7 +91,7 @@ public class XClient {
 			client.setGameplayState(ClientFrame.ENEMYTURN);}
 		else if(response.equals(Net.YOUWIN)) {
 			client.setStage(ClientFrame.GAMEOVERPANEL);
-			client.gameOverLabel.setText("YOU WIN!");
+			client.setGameOverLabelText("YOU WIN!");
 			client.revalidate();
 			client.repaint();}
 		

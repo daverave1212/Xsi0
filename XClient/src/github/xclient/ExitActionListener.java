@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent;
 
 public class ExitActionListener implements ActionListener {
 
-	ClientFrame parentClient;
+	private ClientFrame parentClient;
 	
 	public ExitActionListener(ClientFrame cf) {
 		parentClient = cf;

@@ -19,27 +19,27 @@ import javax.swing.JTextField;
 
 public class ClientFrame extends JFrame{
 	
-	public CardLayout cardLayout;
-	public JPanel clientFrameCards;
-	
-	public JPanel loginPanelCard;
-	public JTextField loginUsernameField;
-	public JTextField loginPasswordField;
-	public JButton	  loginButton;
-	
-	public JPanel playPanelCard;
-	public JButton playButton;
-	
-	public JPanel waitPanelCard;
-	
-	public JPanel gamePanelCard;
-	public JButton[][] xoButtons;
-	public JMenuBar gameMenuBar;
-	public JMenu gameMenuBar_File;
-	public JMenuItem gameMenuBar_File_Exit;
-	
-	public JPanel gameOverPanelCard;
-	public JLabel gameOverLabel;
+	private CardLayout cardLayout;
+	private JPanel clientFrameCards;
+
+	private JPanel loginPanelCard;
+	private JTextField loginUsernameField;
+	private JTextField loginPasswordField;
+	private JButton	  loginButton;
+
+	private JPanel playPanelCard;
+	private JButton playButton;
+
+	private JPanel waitPanelCard;
+
+	private JPanel gamePanelCard;
+	private JButton[][] xoButtons;
+	private JMenuBar gameMenuBar;
+	private JMenu gameMenuBar_File;
+	private JMenuItem gameMenuBar_File_Exit;
+
+	private JPanel gameOverPanelCard;
+	private JLabel gameOverLabel;
 	
 	public static final String LOGINPANEL	= "Login";
 	public static final String PLAYPANEL	= "play";
@@ -52,10 +52,14 @@ public class ClientFrame extends JFrame{
 	
 	public static int currentGameplayState = 2;
 	
-	public boolean areButtonsFrozen = false;
+	private boolean areButtonsFrozen = false;
 	
 	public String getUsername() { return loginUsernameField.getText(); }
 	public String getPassword() { return loginPasswordField.getText(); }
+	public void setGameOverLabelText(String s) {
+		gameOverLabel.setText(s);}
+	public JButton getButton(int i, int j) {
+		return xoButtons[i][j];}
 	
 	public void setStage(String stage) throws Exception {
 		if(stage.equals(LOGINPANEL)) {
@@ -95,7 +99,7 @@ public class ClientFrame extends JFrame{
 			freezeButtons();
 			getTurn();}}
 	
-	public void getTurn() throws Exception{
+	private void getTurn() throws Exception{
 		String response = Net.request(Net.ISMYTURN, "other=filler");
 		if(response.equals(Net.YES)) {
 			setGameplayState(MYTURN);}
@@ -113,23 +117,23 @@ public class ClientFrame extends JFrame{
 			setGameplayState(ENEMYTURN);}}
 	
 	
-	public void freezeButtons() {
+	private void freezeButtons() {
 		if(!areButtonsFrozen) {
 			System.out.println("Freezing buttons...");}
 		areButtonsFrozen = true;}
 	
-	public void unfreezeButtons() {
+	private void unfreezeButtons() {
 		if(areButtonsFrozen) {
 			System.out.println("Unfreezing buttons...");}
 		areButtonsFrozen = false;}
 	
-	public void setupFrame() {
+	private void setupFrame() {
 		setSize(400,  400);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		add(clientFrameCards);}
 	
-	public void setupLoginCard() {
+	private void setupLoginCard() {
 		loginPanelCard	= new JPanel();
 		loginButton = new JButton("Login");
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -157,20 +161,20 @@ public class ClientFrame extends JFrame{
 		setupLoginButton();
 		clientFrameCards.add(loginPanelCard,LOGINPANEL);}
 	
-	public void setupLoginButton() {
+	private void setupLoginButton() {
 		loginButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		XClient.handleActionRequest(Net.LOGIN);
 		}});}
 	
-	public void setupPlayCard() {
+	private void setupPlayCard() {
 		playPanelCard = new JPanel();
 		playButton = new JButton("PLAY NOW!!!");
 		playPanelCard.add(playButton);
 		clientFrameCards.add(playPanelCard, PLAYPANEL);
 		setupPlayButton();}
 	
-	public void setupPlayButton() {
+	private void setupPlayButton() {
 		playButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		XClient.handleActionRequest(Net.PLAY);}

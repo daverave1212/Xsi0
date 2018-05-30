@@ -7,7 +7,7 @@ import java.net.URL;
 
 public class Net {
 	
-	   public static String defaultServerAddress = "";
+	    public static String defaultServerAddress = "";
 	   
 		// Requests from client to server
 		public static String LOGIN			= "LOGIN";
