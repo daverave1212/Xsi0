@@ -20,7 +20,7 @@ public class XServer extends HttpServlet {
         super();}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
+	//	System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
 		try {
 			handleRequest(request, response);
 		} catch (Exception e) {
@@ -29,7 +29,7 @@ public class XServer extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response){
-		System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
+		//System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
 		try {
 			handleRequest(request, response);
 		} catch (Exception e) {
@@ -42,23 +42,21 @@ public class XServer extends HttpServlet {
 		if(action.equals( "RESET")) {
 			playersConnected = new HashMap<String, Player>();
 			playersConnectedUsernames = new ArrayList<String>();
-			return;
-		}
+			return;}
 		if(action.equals("USERS")) {
 			response.getWriter().append("" + playersConnectedUsernames.size());
-			return;
-		}
+			return;}
 		String username = request.getParameter("username");
-		
 		System.out.print("Players: " + playersConnectedUsernames.size() + " ");
 		Player thisPlayer;
 		if(action.equals( Net.LOGIN )){
 			String password = request.getParameter("password");
 			checkAndValidateLogin(username, password, response);}
-		
 		thisPlayer = playersConnected.get(username);
-		
+		if(action.equals("WHO")) {
+			response.getWriter().append(thisPlayer.enemyPlayer.username);}
 		if(action.equals( Net.PLAY )) {
+			thisPlayer.state = Player.WAITING;
 			matchPlayers();
 			response.getWriter().append("OK");}
 		if(action.equals( Net.ISGAMEREADY )) {
@@ -75,8 +73,9 @@ public class XServer extends HttpServlet {
 			String boardAsString = thisPlayer.game.boardToString();
 			response.getWriter().append(boardAsString);}
 		if(action.equals( Net.MOVE )) {
-			int col = Integer.parseInt(request.getParameter("col"));
-			int row = Integer.parseInt(request.getParameter("row"));
+			int square = Integer.parseInt(request.getParameter("square"));
+			int col = square/3;
+			int row = square%3;
 			thisPlayer.game.updateBoard(row, col, thisPlayer.piece);
 			boolean isGameOver = thisPlayer.game.isGameOver();
 			if( isGameOver ) {response.getWriter().append(Net.YOUWIN);
@@ -96,14 +95,13 @@ public class XServer extends HttpServlet {
 	public static void connectPlayer(String username) {
 		playersConnected.put(username, new Player());
 		playersConnectedUsernames.add(username);
-		playersConnected.get(username).state = Player.WAITING;}
+		playersConnected.get(username).state = Player.IDLE;}
 	
 	 public static void checkAndValidateLogin(String username, String password, HttpServletResponse response) throws Exception{
 		boolean isLoginAccepted = Databases.validateLogin(username, password);
 		if(isLoginAccepted) {
 			response.getWriter().append(Net.LOGINACCEPTED);
-			connectPlayer(username);
-			}
+			connectPlayer(username);}
 		else {
 			response.getWriter().append(Net.NO);}}
 	 

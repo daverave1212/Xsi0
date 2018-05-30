@@ -26,8 +26,7 @@ public class Game {
 		return stringToSend.toString();}
 		
 	public void updateBoard(int row, int col, int piece) {
-		
-	}
+		board[row][col] = piece;}
 	
 	public boolean isGameOver() {
 		return false;
