@@ -67,22 +67,42 @@ public class XServer extends HttpServlet {
 			if(thisPlayer.piece == Game.X){	response.getWriter().append(Net.X);}
 			if(thisPlayer.piece == Game.O){	response.getWriter().append(Net.O);}}
 		if(action.equals( Net.ISMYTURN )) {
-			if( thisPlayer.isMyTurnNow ){	response.getWriter().append(Net.YES);}
-			if(!thisPlayer.isMyTurnNow ){	response.getWriter().append(Net.NO);}}
+			if( thisPlayer.autoWin) {
+				response.getWriter().append(Net.YOUWIN);}
+			else if( thisPlayer.game.isGameOver()) {
+				response.getWriter().append(Net.YOULOSE);
+				disconnectPlayer(thisPlayer.username);
+			}
+			else if( thisPlayer.isMyTurnNow ){	response.getWriter().append(Net.YES);}
+			else if(!thisPlayer.isMyTurnNow ){	response.getWriter().append(Net.NO);}}
 		if(action.equals( Net.GETBOARD )) {
 			String boardAsString = thisPlayer.game.boardToString();
 			response.getWriter().append(boardAsString);}
 		if(action.equals( Net.MOVE )) {
-			int square = Integer.parseInt(request.getParameter("square"));
-			int col = square/3;
-			int row = square%3;
-			thisPlayer.game.updateBoard(row, col, thisPlayer.piece);
-			boolean isGameOver = thisPlayer.game.isGameOver();
-			if( isGameOver ) {response.getWriter().append(Net.YOUWIN);
-				finalizeGame(thisPlayer);}
-			if(!isGameOver ) {response.getWriter().append(Net.ENEMYTURN);
-				thisPlayer.isMyTurnNow = false;
-				thisPlayer.enemyPlayer.isMyTurnNow = true;}}
+			if(thisPlayer.autoWin) {
+				response.getWriter().append(Net.YOUWIN);}
+			else {
+				int square = Integer.parseInt(request.getParameter("square"));
+				int row = square/3;
+				int col = square%3;
+				thisPlayer.game.updateBoard(row, col, thisPlayer.piece);
+				boolean isGameOver = thisPlayer.game.isGameOver();
+				if( isGameOver ) {response.getWriter().append(Net.YOUWIN);
+					disconnectPlayer(thisPlayer.username);}
+				if(!isGameOver ) {response.getWriter().append(Net.ENEMYTURN);
+					thisPlayer.isMyTurnNow = false;
+					thisPlayer.enemyPlayer.isMyTurnNow = true;}}}
+		if(action.equals(Net.CONCEDE)) {
+			if(thisPlayer.state == Player.IDLE) {
+				disconnectPlayer(username);}
+			else if(thisPlayer.state == Player.WAITING) {
+				thisPlayer.state = Player.IDLE;
+				disconnectPlayer(username);}
+			else if(thisPlayer.state == Player.PLAYING) {
+				thisPlayer.enemyPlayer.autoWin = true;
+				disconnectPlayer(username);
+			}
+		}
 		
 		
 	}
@@ -95,7 +115,19 @@ public class XServer extends HttpServlet {
 	public static void connectPlayer(String username) {
 		playersConnected.put(username, new Player());
 		playersConnectedUsernames.add(username);
-		playersConnected.get(username).state = Player.IDLE;}
+		playersConnected.get(username).state = Player.IDLE;
+		playersConnected.get(username).username = username;}
+	
+	public static void disconnectPlayer(String username) {
+		int indexInUsernames = findStringInArrayList(playersConnectedUsernames, username);
+		playersConnectedUsernames.remove(indexInUsernames);
+		playersConnected.remove(username);}
+	
+	public static int findStringInArrayList(ArrayList<String> a, String s) {
+		for(int i = 0; i<a.size(); i++) {
+			if(a.get(i).equals(s)) {
+				return i;}}
+		return -1;}
 	
 	 public static void checkAndValidateLogin(String username, String password, HttpServletResponse response) throws Exception{
 		boolean isLoginAccepted = Databases.validateLogin(username, password);
@@ -120,15 +152,23 @@ public class XServer extends HttpServlet {
 		 if(p2username != "~") {
 			 // 2 players were found!
 			 Player p1 = playersConnected.get(p1username);
+			 System.out.println(p1.username);
 			 Player p2 = playersConnected.get(p2username);
+			 System.out.println(p2.username);
 			 createGame(p1, p2);}
 		 else {/* Not enough players were found */}}
 	 
 	 public static void createGame(Player p1, Player p2) {
 		 p1.isGameReady = false;
 		 p2.isGameReady = false;
+		 p1.state = Player.PLAYING;
+		 p2.state = Player.PLAYING;
+		 p1.enemyPlayer = p2;
+		 p2.enemyPlayer = p1;
 		 p1.game = new Game();
 		 p2.game = p1.game;
+		 p1.game.p1 = p1;
+		 p2.game.p2 = p2;
 		 p1.piece = Game.X;
 		 p2.piece = Game.O;
 		 p1.isMyTurnNow = true;
@@ -136,7 +176,4 @@ public class XServer extends HttpServlet {
 		 p1.isGameReady = true;
 		 p2.isGameReady = true;}
 
-	 public static void finalizeGame(Player p) {
-		 
-	 }
 }

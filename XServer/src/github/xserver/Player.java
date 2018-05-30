@@ -12,6 +12,7 @@ public class Player {
 	public int state = WAITING;
 	public boolean isGameReady = false;
 	public boolean isMyTurnNow = false;
+	public boolean autoWin = false;
 	public Game game;
 	public int piece = Game.N;
 }

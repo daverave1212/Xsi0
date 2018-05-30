@@ -1,5 +1,11 @@
 package ShengenClan.dodo;
 
-public class D {
+import ShengenClan.*;
 
+public class D {
+	A a;
+	
+	void adas() {
+		
+	}
 }

@@ -18,13 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class ClientFrame extends JFrame{
-
-	/*
-	 * AMBELE PRIMESC IN CONTINUU -ISMYTURN : NO-
-	 * FIX THAT
-	 * 
-	 */
-	
 	
 	public CardLayout cardLayout;
 	public JPanel clientFrameCards;
@@ -45,15 +38,21 @@ public class ClientFrame extends JFrame{
 	public JMenu gameMenuBar_File;
 	public JMenuItem gameMenuBar_File_Exit;
 	
+	public JPanel gameOverPanelCard;
+	public JLabel gameOverLabel;
+	
 	public static final String LOGINPANEL	= "Login";
 	public static final String PLAYPANEL	= "play";
 	public static final String GAMEPANEL	= "game";
 	public static final String WAITPANEL	= "wait";
+	public static final String GAMEOVERPANEL= "over";
 	
 	public static final int MYTURN		= 1;
 	public static final int ENEMYTURN	= 2;
 	
 	public static int currentGameplayState = 2;
+	
+	public boolean areButtonsFrozen = false;
 	
 	public String getUsername() { return loginUsernameField.getText(); }
 	public String getPassword() { return loginPasswordField.getText(); }
@@ -81,17 +80,10 @@ public class ClientFrame extends JFrame{
 			response = Net.request(Net.MYPIECE, "other=filler");
 			System.out.println("Received piece " + response);
 			XClient.piece = response;
-			getTurn();}}
-	
-	public void getTurn() throws Exception{
-		String response = Net.request(Net.ISMYTURN, "other=filler");
-		if(response.equals(Net.YES)) {
-			setGameplayState(MYTURN);}
-		else {
-			System.out.println("Asked for my turn. Received " + response);
-			TimeUnit.SECONDS.sleep(1);
-			setGameplayState(ENEMYTURN);}}
-	
+			getTurn();}
+		if(stage.equals(GAMEOVERPANEL)) {
+			cardLayout.show(clientFrameCards, stage);}}
+
 	public void setGameplayState(int s) throws Exception{
 		currentGameplayState = s;
 		String response;
@@ -102,6 +94,34 @@ public class ClientFrame extends JFrame{
 		if(currentGameplayState == ENEMYTURN) {
 			freezeButtons();
 			getTurn();}}
+	
+	public void getTurn() throws Exception{
+		String response = Net.request(Net.ISMYTURN, "other=filler");
+		if(response.equals(Net.YES)) {
+			setGameplayState(MYTURN);}
+		else if(response.equals(Net.YOUWIN)) {
+			setStage(GAMEOVERPANEL);
+			gameOverLabel.setText("You win. Your opponent conceded (smh)");
+			revalidate();
+			repaint();}
+		else if(response.equals(Net.YOULOSE)) {
+			setStage(GAMEOVERPANEL);
+			}
+		else if(response.equals(Net.NO)){
+			System.out.println("Asked for my turn. Received " + response);
+			TimeUnit.SECONDS.sleep(1);
+			setGameplayState(ENEMYTURN);}}
+	
+	
+	public void freezeButtons() {
+		if(!areButtonsFrozen) {
+			System.out.println("Freezing buttons...");}
+		areButtonsFrozen = true;}
+	
+	public void unfreezeButtons() {
+		if(areButtonsFrozen) {
+			System.out.println("Unfreezing buttons...");}
+		areButtonsFrozen = false;}
 	
 	public void setupFrame() {
 		setSize(400,  400);
@@ -174,31 +194,29 @@ public class ClientFrame extends JFrame{
 		setupMenuBar();
 		clientFrameCards.add(gamePanelCard, GAMEPANEL);}
 	
+	public void setupGameOverCard() {
+		gameOverPanelCard = new JPanel();
+		gameOverLabel = new JLabel();
+		gameOverPanelCard.add(gameOverLabel);
+		clientFrameCards.add(gameOverPanelCard, GAMEOVERPANEL);
+	}
+	
 	public void setupMenuBar() {
 		gameMenuBar = new JMenuBar();
 		gameMenuBar_File = new JMenu("File");
 		gameMenuBar.add(gameMenuBar_File);
 		gameMenuBar_File_Exit = new JMenuItem("Exit");
 		gameMenuBar_File.add(gameMenuBar_File_Exit);
+		gameMenuBar_File_Exit.addActionListener(new ExitActionListener(this));
 		setJMenuBar(gameMenuBar);}
+	
 	
 	
 	public void xoButtonClicked(int row, int col) {
 		System.out.println("Clicked " + row + " " + col);
 		if(XClient.board[row][col] == XClient.N) {
 			XClient.handleActionRequest(Net.MOVE, row, col);}}
-	
 
-	public boolean areButtonsFrozen = false;
-	public void freezeButtons() {
-		if(!areButtonsFrozen) {
-			System.out.println("Freezing buttons...");}
-		areButtonsFrozen = true;}
-	
-	public void unfreezeButtons() {
-		if(areButtonsFrozen) {
-			System.out.println("Unfreezing buttons...");}
-		areButtonsFrozen = false;}
 	
 	public ClientFrame() {
 		cardLayout		= new CardLayout();
@@ -207,6 +225,7 @@ public class ClientFrame extends JFrame{
 		setupPlayCard();
 		setupWaitCard();
 		setupGameCard();
+		setupGameOverCard();
 		setupFrame();
 		setupMenuBar();}
 	

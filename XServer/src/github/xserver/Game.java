@@ -29,6 +29,18 @@ public class Game {
 		board[row][col] = piece;}
 	
 	public boolean isGameOver() {
+		int piece;
+		for(int i = 0; i<=2; i++) {
+			piece = board[i][0];
+			if(board[i][0] == piece && board[i][1] == piece && board[i][2] == piece && piece != N) {
+				return true;}
+			piece = board[0][i];
+			if(board[0][i] == piece && board[1][i] == piece && board[2][i] == piece && piece != N) {
+				return true;}}
+		if(board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[2][2] != N) {
+			return true;}
+		if(board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[2][0] != N) {
+			return true;}
 		return false;
 	}
 	

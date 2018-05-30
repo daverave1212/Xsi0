@@ -1,13 +1,8 @@
 package github.xclient;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 public class XClient {
 	
-	public static String username;
+	public static String username = "~@!~";
 	public static String password;
 	public static ClientFrame client;
 	public static String piece;
@@ -86,12 +81,19 @@ public class XClient {
 	
 	public static void handleActionRequest(String action, int row, int col){ try {
 		String response = "NULL";
-		System.out.println("Handling click on: " + row + " " + col);
 		int sentIndex = row * 3 + col;
 		response = Net.request(Net.MOVE, "square=" + sentIndex);
 		System.out.println("Received " + response);
 		if(response.equals(Net.ENEMYTURN)) {
+			response = Net.request(Net.GETBOARD, "allyourbase=belongtous");
+			//updateBoard(response);
+			//updateInterfaceButtons();
 			client.setGameplayState(ClientFrame.ENEMYTURN);}
+		else if(response.equals(Net.YOUWIN)) {
+			client.setStage(ClientFrame.GAMEOVERPANEL);
+			client.gameOverLabel.setText("YOU WIN!");
+			client.revalidate();
+			client.repaint();}
 		
 		}catch(Exception e) {e.printStackTrace();}}
 
