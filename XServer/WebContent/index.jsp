@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-  <script src="logic.js"></script>
+  <script src="WebContent/logic.js"></script>
 </head>
 <body>
 <form>
