@@ -6,14 +6,14 @@ import java.awt.event.WindowEvent;
 
 public class ExitActionListener implements ActionListener {
 
-	ClientFrame parentClient;
+	private ClientFrame parentClient;
 	
 	public ExitActionListener(ClientFrame cf) {
 		parentClient = cf;
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {
-		if(XClient.username.equals("~!@~")) {
+		if(XClient.getUsername().equals("~!@~")) {
 			//just exit
 		} else {
 			try {

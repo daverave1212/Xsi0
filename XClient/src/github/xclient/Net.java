@@ -45,7 +45,7 @@ public class Net {
 	      return result.toString();}
 	   
 	   public static String request(String action, String otherParams) throws Exception{
-		   String username = XClient.username;
+		   String username = XClient.getUsername();
 		   return Net.get(defaultServerAddress + "?username=" + username + "&action=" + action + "&" + otherParams);
 	   }
 	

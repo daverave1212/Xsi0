@@ -12,9 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/XServer")
 public class XServer extends HttpServlet {
-	private static final long serialVersionUID = 1L;
 	
-
+	private static final long serialVersionUID = 1L;
       
     public XServer() {
         super();}
@@ -54,52 +53,52 @@ public class XServer extends HttpServlet {
 			checkAndValidateLogin(username, password, response);}
 		thisPlayer = playersConnected.get(username);
 		if(action.equals("WHO")) {
-			response.getWriter().append(thisPlayer.enemyPlayer.username);}
+			response.getWriter().append(thisPlayer.getEnemyPlayer().getUsername());}
 		if(action.equals( Net.PLAY )) {
-			thisPlayer.state = Player.WAITING;
+			thisPlayer.setState(Player.WAITING);
 			matchPlayers();
 			response.getWriter().append("OK");}
 		if(action.equals( Net.ISGAMEREADY )) {
-			boolean isThisGameReady = playersConnected.get(username).isGameReady;
+			boolean isThisGameReady = playersConnected.get(username).isGameReady();
 			if( isThisGameReady ){	response.getWriter().append(Net.YES);}
 			if(!isThisGameReady ){	response.getWriter().append(Net.NO);}}
 		if(action.equals( Net.MYPIECE )) {
-			if(thisPlayer.piece == Game.X){	response.getWriter().append(Net.X);}
-			if(thisPlayer.piece == Game.O){	response.getWriter().append(Net.O);}}
+			if(thisPlayer.getPiece() == Game.X){	response.getWriter().append(Net.X);}
+			if(thisPlayer.getPiece() == Game.O){	response.getWriter().append(Net.O);}}
 		if(action.equals( Net.ISMYTURN )) {
-			if( thisPlayer.autoWin) {
+			if( thisPlayer.isAutoWin()) {
 				response.getWriter().append(Net.YOUWIN);}
-			else if( thisPlayer.game.isGameOver()) {
+			else if( thisPlayer.getGame().isGameOver()) {
 				response.getWriter().append(Net.YOULOSE);
-				disconnectPlayer(thisPlayer.username);
+				disconnectPlayer(thisPlayer.getUsername());
 			}
-			else if( thisPlayer.isMyTurnNow ){	response.getWriter().append(Net.YES);}
-			else if(!thisPlayer.isMyTurnNow ){	response.getWriter().append(Net.NO);}}
+			else if( thisPlayer.isMyTurnNow() ){	response.getWriter().append(Net.YES);}
+			else if(!thisPlayer.isMyTurnNow() ){	response.getWriter().append(Net.NO);}}
 		if(action.equals( Net.GETBOARD )) {
-			String boardAsString = thisPlayer.game.boardToString();
+			String boardAsString = thisPlayer.getGame().boardToString();
 			response.getWriter().append(boardAsString);}
 		if(action.equals( Net.MOVE )) {
-			if(thisPlayer.autoWin) {
+			if(thisPlayer.isAutoWin()) {
 				response.getWriter().append(Net.YOUWIN);}
 			else {
 				int square = Integer.parseInt(request.getParameter("square"));
 				int row = square/3;
 				int col = square%3;
-				thisPlayer.game.updateBoard(row, col, thisPlayer.piece);
-				boolean isGameOver = thisPlayer.game.isGameOver();
+				thisPlayer.getGame().updateBoard(row, col, thisPlayer.getPiece());
+				boolean isGameOver = thisPlayer.getGame().isGameOver();
 				if( isGameOver ) {response.getWriter().append(Net.YOUWIN);
-					disconnectPlayer(thisPlayer.username);}
+					disconnectPlayer(username);}
 				if(!isGameOver ) {response.getWriter().append(Net.ENEMYTURN);
-					thisPlayer.isMyTurnNow = false;
-					thisPlayer.enemyPlayer.isMyTurnNow = true;}}}
+					thisPlayer.setMyTurnNow(false);
+					thisPlayer.getEnemyPlayer().setMyTurnNow(true);}}}
 		if(action.equals(Net.CONCEDE)) {
-			if(thisPlayer.state == Player.IDLE) {
+			if(thisPlayer.getState() == Player.IDLE) {
 				disconnectPlayer(username);}
-			else if(thisPlayer.state == Player.WAITING) {
-				thisPlayer.state = Player.IDLE;
+			else if(thisPlayer.getState() == Player.WAITING) {
+				thisPlayer.setState(Player.IDLE);
 				disconnectPlayer(username);}
-			else if(thisPlayer.state == Player.PLAYING) {
-				thisPlayer.enemyPlayer.autoWin = true;
+			else if(thisPlayer.getState() == Player.PLAYING) {
+				thisPlayer.getEnemyPlayer().setAutoWin(true);
 				disconnectPlayer(username);
 			}
 		}
@@ -115,8 +114,8 @@ public class XServer extends HttpServlet {
 	public static void connectPlayer(String username) {
 		playersConnected.put(username, new Player());
 		playersConnectedUsernames.add(username);
-		playersConnected.get(username).state = Player.IDLE;
-		playersConnected.get(username).username = username;}
+		playersConnected.get(username).setState(Player.IDLE);
+		playersConnected.get(username).setUsername(username);}
 	
 	public static void disconnectPlayer(String username) {
 		int indexInUsernames = findStringInArrayList(playersConnectedUsernames, username);
@@ -144,7 +143,7 @@ public class XServer extends HttpServlet {
 		 for(int i = 0; i<playersConnectedUsernames.size(); i++) {
 			 String currentUsername = playersConnectedUsernames.get(i);
 			 Player currentPlayer	= playersConnected.get(currentUsername);
-			 if(currentPlayer.state == Player.WAITING) {
+			 if(currentPlayer.getState() == Player.WAITING) {
 				 if(p1username == "~") {
 					 p1username = currentUsername;}
 				 else {
@@ -152,28 +151,26 @@ public class XServer extends HttpServlet {
 		 if(p2username != "~") {
 			 // 2 players were found!
 			 Player p1 = playersConnected.get(p1username);
-			 System.out.println(p1.username);
 			 Player p2 = playersConnected.get(p2username);
-			 System.out.println(p2.username);
 			 createGame(p1, p2);}
 		 else {/* Not enough players were found */}}
 	 
 	 public static void createGame(Player p1, Player p2) {
-		 p1.isGameReady = false;
-		 p2.isGameReady = false;
-		 p1.state = Player.PLAYING;
-		 p2.state = Player.PLAYING;
-		 p1.enemyPlayer = p2;
-		 p2.enemyPlayer = p1;
-		 p1.game = new Game();
-		 p2.game = p1.game;
-		 p1.game.p1 = p1;
-		 p2.game.p2 = p2;
-		 p1.piece = Game.X;
-		 p2.piece = Game.O;
-		 p1.isMyTurnNow = true;
-		 p2.isMyTurnNow = false;
-		 p1.isGameReady = true;
-		 p2.isGameReady = true;}
+		 p1.setGameReady(false);
+		 p2.setGameReady(false);
+		 p1.setState(Player.PLAYING);
+		 p2.setState(Player.PLAYING);
+		 p1.setEnemyPlayer(p2);
+		 p2.setEnemyPlayer(p1);
+		 p1.setGame(new Game());
+		 p2.setGame(p1.getGame());
+		 p1.getGame().setP1(p1);
+		 p2.getGame().setP2(p2);
+		 p1.setPiece(Game.X);
+		 p2.setPiece(Game.O);
+		 p1.setMyTurnNow(true);
+		 p2.setMyTurnNow(false);
+		 p1.setGameReady(true);
+		 p2.setGameReady(true);}
 
 }

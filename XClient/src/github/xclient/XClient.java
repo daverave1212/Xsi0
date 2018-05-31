@@ -2,10 +2,22 @@ package github.xclient;
 
 public class XClient {
 	
-	public static String username = "~@!~";
-	public static String password;
-	public static ClientFrame client;
-	public static String piece;
+	private static String username = "~@!~";
+	private static String password;
+	private static ClientFrame client;
+	private static String piece;
+	
+	public static String getPiece() {
+		return piece;}
+	
+	public static void setPiece(String s) {
+		piece = s;}
+	
+	public static String getUsername() {
+		return username;}
+	
+	public static void setUsername(String u) {
+		username = u;}
 	
 	public static int X = 1;
 	public static int O = 0;
@@ -58,9 +70,9 @@ public class XClient {
 	public static void updateInterfaceButtons() {
 		for(int i = 0; i<3; i++) {
 			for(int j = 0; j<3; j++) {
-				if(board[i][j] == N) {client.xoButtons[i][j].setText("N");}
-				if(board[i][j] == X) {client.xoButtons[i][j].setText("X");}
-				if(board[i][j] == O) {client.xoButtons[i][j].setText("O");}}}
+				if(board[i][j] == N) {client.getButton(i, j).setText("N");}
+				if(board[i][j] == X) {client.getButton(i, j).setText("X");}
+				if(board[i][j] == O) {client.getButton(i, j).setText("O");}}}
 		client.revalidate();
 		client.repaint();}
 	
@@ -91,7 +103,7 @@ public class XClient {
 			client.setGameplayState(ClientFrame.ENEMYTURN);}
 		else if(response.equals(Net.YOUWIN)) {
 			client.setStage(ClientFrame.GAMEOVERPANEL);
-			client.gameOverLabel.setText("YOU WIN!");
+			client.getGameOverLabel().setText("YOU WIN!");
 			client.revalidate();
 			client.repaint();}
 		
