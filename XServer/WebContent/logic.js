@@ -8,7 +8,7 @@ function Player(u,p){
 }
 var player=new Player();
 //var link="http://5.12.252.136:8080/XServer/XServer?";
-var link="http://localhost:8080/XServer?"
+var link="http://localhost:8080/XServer/XServer?"
 var id;
 
 function buildBoard(v){
