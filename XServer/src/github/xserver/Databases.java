@@ -151,4 +151,16 @@ public class Databases {
 		return 0;
 	}
 
+	public static boolean createAccount(String username, String password) {
+		
+		/*
+		 * Baga un cont nou in baza de date cu username si password.
+		 * Returneaza true daca a mers.
+		 * Returneaza false daca nu a mers (gen, usernameul deja exista)
+		 * 
+		 */
+		
+		return false;
+	}
+	
 }

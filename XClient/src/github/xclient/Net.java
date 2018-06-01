@@ -17,10 +17,15 @@ public class Net {
 		public static String GETBOARD		= "GETBOARD";
 		public static String MOVE			= "MOVE";
 		public static String PLAY			= "PLAY";
+		public static String MYSTATS		= "MYSTATS";
 		public static String CONCEDE		= "CONCEDE";
+		public static String REGISTER		= "REGISTER";
 
 		// Responses from server to client
 		public static String LOGINACCEPTED	= "LOGINACCEPTED";
+		public static String LOGINDENIED	= "LOGINDENIED";
+		public static String REGISTERSUCCESS= "REGISTERSUCCESS";
+		public static String REGISTERFAIL	= "REGISTERFAIL";
 		public static String NO				= "NO";
 		public static String YES			= "YES";
 		public static String X				= "X";

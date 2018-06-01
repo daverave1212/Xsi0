@@ -46,11 +46,15 @@ public class XServer extends HttpServlet {
 			response.getWriter().append("" + playersConnectedUsernames.size());
 			return;}
 		String username = request.getParameter("username");
-		System.out.print("Players: " + playersConnectedUsernames.size() + " ");
 		Player thisPlayer;
 		if(action.equals( Net.LOGIN )){
 			String password = request.getParameter("password");
 			checkAndValidateLogin(username, password, response);}
+		if(action.equals( Net.REGISTER )) {
+			boolean accountCreated = Databases.createAccount(request.getParameter("username"), request.getParameter("passwprd"));
+			if(accountCreated) {
+				response.getWriter().append(Net.REGISTERSUCCESS);}
+			else response.getWriter().append(Net.REGISTERFAIL);}
 		thisPlayer = playersConnected.get(username);
 		if(action.equals("WHO")) {
 			response.getWriter().append(thisPlayer.getEnemyPlayer().getUsername());}
@@ -58,6 +62,11 @@ public class XServer extends HttpServlet {
 			thisPlayer.setState(Player.WAITING);
 			matchPlayers();
 			response.getWriter().append("OK");}
+		if(action.equals(Net.MYSTATS)) {
+			String playerStats = "";
+			playerStats += Databases.getPlayerWins(username);
+			playerStats += "-";
+			playerStats += Databases.getPlayerGames(username);}
 		if(action.equals( Net.ISGAMEREADY )) {
 			boolean isThisGameReady = playersConnected.get(username).isGameReady();
 			if( isThisGameReady ){	response.getWriter().append(Net.YES);}
@@ -70,8 +79,7 @@ public class XServer extends HttpServlet {
 				response.getWriter().append(Net.YOUWIN);}
 			else if( thisPlayer.getGame().isGameOver()) {
 				response.getWriter().append(Net.YOULOSE);
-				disconnectPlayer(thisPlayer.getUsername());
-			}
+				disconnectPlayer(thisPlayer.getUsername());}
 			else if( thisPlayer.isMyTurnNow() ){	response.getWriter().append(Net.YES);}
 			else if(!thisPlayer.isMyTurnNow() ){	response.getWriter().append(Net.NO);}}
 		if(action.equals( Net.GETBOARD )) {
@@ -79,7 +87,8 @@ public class XServer extends HttpServlet {
 			response.getWriter().append(boardAsString);}
 		if(action.equals( Net.MOVE )) {
 			if(thisPlayer.isAutoWin()) {
-				response.getWriter().append(Net.YOUWIN);}
+				response.getWriter().append(Net.YOUWIN);
+				Databases.addWinForPlayer(username);}
 			else {
 				int square = Integer.parseInt(request.getParameter("square"));
 				int row = square/3;
@@ -171,6 +180,9 @@ public class XServer extends HttpServlet {
 		 p1.setMyTurnNow(true);
 		 p2.setMyTurnNow(false);
 		 p1.setGameReady(true);
-		 p2.setGameReady(true);}
+		 p2.setGameReady(true);
+		 Databases.addGameForPlayer(p1.getUsername());
+		 Databases.addGameForPlayer(p2.getUsername());
+	 }
 
 }

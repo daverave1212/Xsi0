@@ -1,5 +1,9 @@
 package github.xclient;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.JOptionPane;
+
 public class XClient {
 	
 	private static String username = "~@!~";
@@ -70,7 +74,7 @@ public class XClient {
 	public static void updateInterfaceButtons() {
 		for(int i = 0; i<3; i++) {
 			for(int j = 0; j<3; j++) {
-				if(board[i][j] == N) {client.getButton(i, j).setText("N");}
+				if(board[i][j] == N) {client.getButton(i, j).setText(" ");}
 				if(board[i][j] == X) {client.getButton(i, j).setText("X");}
 				if(board[i][j] == O) {client.getButton(i, j).setText("O");}}}
 		client.revalidate();
@@ -85,10 +89,22 @@ public class XClient {
 			System.out.println("Login: " + response);
 			if(response.equals(Net.LOGINACCEPTED)) {
 				client.setStage(ClientFrame.PLAYPANEL);}}
+		if(action.equals(Net.REGISTER)) {
+			username = client.getUsername();
+			response = Net.request(Net.REGISTER, "password=" + client.getPassword());}
+			if(response.equals(Net.REGISTERSUCCESS)) {
+				JOptionPane.showMessageDialog(client, "Your account was successfully created!");}
+			if(response.equals(Net.REGISTERFAIL)) {
+				JOptionPane.showMessageDialog(client, "Your account could not be created :c");}
 		if(action.equals(Net.PLAY)) {
 			response = Net.request(Net.PLAY, "other=filler");
 			System.out.println("Play:" + response);
-			client.setStage(ClientFrame.WAITPANEL);}
+			Runnable setStageLambda = () -> {
+				try {
+				client.setStage(ClientFrame.WAITPANEL);
+				}catch(Exception e) {e.printStackTrace();}};
+			Thread setStageThread = new Thread(setStageLambda);
+			setStageThread.start();}
 		}catch(Exception e) {e.printStackTrace();}}
 	
 	public static void handleActionRequest(String action, int row, int col){ try {
@@ -98,8 +114,9 @@ public class XClient {
 		System.out.println("Received " + response);
 		if(response.equals(Net.ENEMYTURN)) {
 			response = Net.request(Net.GETBOARD, "allyourbase=belongtous");
-			//updateBoard(response);
-			//updateInterfaceButtons();
+			TimeUnit.SECONDS.sleep(1);
+			updateBoard(response);
+			updateInterfaceButtons();
 			client.setGameplayState(ClientFrame.ENEMYTURN);}
 		else if(response.equals(Net.YOUWIN)) {
 			client.setStage(ClientFrame.GAMEOVERPANEL);
