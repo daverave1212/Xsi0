@@ -14,6 +14,8 @@ public class Databases {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
+			//System.out.println("Class not found!");
+			System.out.println(e.getMessage()+"\n");
 			throw new SQLException();
 		}
 		Connection myConn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
@@ -21,28 +23,28 @@ public class Databases {
 	}
 
 	private static void closeConnection(Connection myConn){
-        try {
-            myConn.close();
-        } catch (SQLException e) {
-            return;
-        }
-    }
+		try {
+			myConn.close();
+		} catch (SQLException e) {
+			return;
+		}
+	}
 
-    private static void closePS(java.sql.PreparedStatement ps){
-        try {
-            ps.close();
-        } catch (SQLException e) {
-            return;
-        }
-    }
+	private static void closePS(java.sql.PreparedStatement ps){
+		try {
+			ps.close();
+		} catch (SQLException e) {
+			return;
+		}
+	}
 
-    private static void closeResult(ResultSet rs){
-        try {
-            rs.close();
-        } catch (SQLException e) {
-            return;
-        }
-    }
+	private static void closeResult(ResultSet rs){
+		try {
+			rs.close();
+		} catch (SQLException e) {
+			return;
+		}
+	}
 
 	public static boolean validateLogin(String username, String password) throws SQLException {
 
@@ -59,7 +61,7 @@ public class Databases {
 			System.out.println("Eroare de conexiune cu DB sql\n");
 			return true;
 		}
-
+		System.out.println(username + " " + password);
 		java.sql.PreparedStatement ps;
 		try {
 			ps = database.prepareStatement
@@ -82,16 +84,18 @@ public class Databases {
 			return true;
 		}
 		while (rs.next()){
-            String one= null;
-            try {
-                one = rs.getString(1);
-            } catch (SQLException e) {
-                return true;
-            }
-            if(Integer.parseInt(one)==1)
+			String one= null;
+			try {
+				one = rs.getString(1);
+			} catch (SQLException e) {
 				return true;
-			else
+			}
+			if(Integer.parseInt(one)==1)
+				return true;
+			else {
+				System.out.println(one);
 				return false;
+			}
 		}
 
 		closeResult(rs);
@@ -99,5 +103,52 @@ public class Databases {
 		closeConnection(database);
 		return true;
 	}
-	
+
+	public static void addGameForPlayer(String username) {
+
+		/*
+		 *
+		 * Adauga 1 la numarul de jocuri totale
+		 * playerului cu usernameul respectiv
+		 *
+		 *
+		 */
+
+	}
+
+	public static void addWinForPlayer(String username) {
+
+		/*
+		 *
+		 * Adauga 1 la numarul total de castiguri
+		 * playerului cu usernameul respectiv
+		 *
+		 *
+		 */
+
+
+	}
+
+	public static int getPlayerWins(String username) {
+
+		/*
+		 *
+		 * Returneaza numarul de winuri ale playerului (in total)
+		 *
+		 */
+
+		return 0;
+	}
+
+	public static int getPlayerGames(String username) {
+
+		/*
+		 *
+		 * Returneaza numarul total de meciuri in care a intrat
+		 *
+		 */
+
+		return 0;
+	}
+
 }
