@@ -25,6 +25,7 @@ public class Net {
 	public static String O				= "O";
 	public static String YOUWIN			= "YOUWIN";
 	public static String YOULOSE		= "YOULOSE";
+	public static String DRAW			= "DRAW";
 	public static String ENEMYTURN		= "ENEMYTURN";
 	
 }

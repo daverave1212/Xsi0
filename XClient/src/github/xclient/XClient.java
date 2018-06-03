@@ -11,6 +11,10 @@ public class XClient {
 	private static ClientFrame client;
 	private static String piece;
 	
+	public static String getPassword() {
+		return password;
+	}
+	
 	public static String getPiece() {
 		return piece;}
 	
@@ -31,6 +35,12 @@ public class XClient {
 		{N, N, N},
 		{N, N, N},
 		{N, N, N}};
+		
+	public static void resetBoard() {
+		for(int i = 0; i<=2; i++) {
+			for(int j = 0; j<=2; j++) {
+				board[i][j] = N;
+				client.getButton(i,  j).setText(" ");}}}
 		
 	public static void updateBoard(String query) {
 		switch(query.charAt(0)) {
@@ -97,6 +107,8 @@ public class XClient {
 			if(response.equals(Net.REGISTERFAIL)) {
 				JOptionPane.showMessageDialog(client, "Your account could not be created :c");}
 		if(action.equals(Net.PLAY)) {
+			resetBoard();
+			client.unfreezeButtons();
 			response = Net.request(Net.PLAY, "other=filler");
 			System.out.println("Play:" + response);
 			Runnable setStageLambda = () -> {
@@ -121,6 +133,11 @@ public class XClient {
 		else if(response.equals(Net.YOUWIN)) {
 			client.setStage(ClientFrame.GAMEOVERPANEL);
 			client.getGameOverLabel().setText("YOU WIN!");
+			client.revalidate();
+			client.repaint();}
+		else if(response.equals(Net.DRAW)) {
+			client.setStage(ClientFrame.GAMEOVERPANEL);
+			client.getGameOverLabel().setText("Draw. As expected...");
 			client.revalidate();
 			client.repaint();}
 		

@@ -18,21 +18,21 @@ public class XServer extends HttpServlet {
     public XServer() {
         super();}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	//	System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			handleRequest(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("ERROR HERE");
 		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response){
-		//System.out.println(request.getRequestURL().append('?').append(request.getQueryString()));
 		try {
 			handleRequest(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("ERROR HERE");
 		}
 	}
 	
@@ -77,8 +77,11 @@ public class XServer extends HttpServlet {
 		if(action.equals( Net.ISMYTURN )) {
 			if( thisPlayer.isAutoWin()) {
 				response.getWriter().append(Net.YOUWIN);}
-			else if( thisPlayer.getGame().isGameOver()) {
+			else if( thisPlayer.getGame().isGameOver() == Game.GAMEOVER) {
 				response.getWriter().append(Net.YOULOSE);
+				disconnectPlayer(thisPlayer.getUsername());}
+			else if( thisPlayer.getGame().isGameOver() == Game.DRAW) {
+				response.getWriter().append(Net.DRAW);
 				disconnectPlayer(thisPlayer.getUsername());}
 			else if( thisPlayer.isMyTurnNow() ){	response.getWriter().append(Net.YES);}
 			else if(!thisPlayer.isMyTurnNow() ){	response.getWriter().append(Net.NO);}}
@@ -94,12 +97,16 @@ public class XServer extends HttpServlet {
 				int row = square/3;
 				int col = square%3;
 				thisPlayer.getGame().updateBoard(row, col, thisPlayer.getPiece());
-				boolean isGameOver = thisPlayer.getGame().isGameOver();
-				if( isGameOver ) {response.getWriter().append(Net.YOUWIN);
+				int isGameOver = thisPlayer.getGame().isGameOver();
+				if( isGameOver == Game.GAMEOVER ) {response.getWriter().append(Net.YOUWIN);
 					disconnectPlayer(username);}
-				if(!isGameOver ) {response.getWriter().append(Net.ENEMYTURN);
+				if( isGameOver == Game.NOTGAMEOVER ) {response.getWriter().append(Net.ENEMYTURN);
 					thisPlayer.setMyTurnNow(false);
-					thisPlayer.getEnemyPlayer().setMyTurnNow(true);}}}
+					thisPlayer.getEnemyPlayer().setMyTurnNow(true);}
+				if( isGameOver == Game.DRAW) {
+					response.getWriter().append(Net.DRAW);
+					disconnectPlayer(username);}
+			}}
 		if(action.equals(Net.CONCEDE)) {
 			if(thisPlayer.getState() == Player.IDLE) {
 				disconnectPlayer(username);}

@@ -8,7 +8,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-  <script>
+	<script id = "Dave">
+		var serverIPAddress;
+		
+		function setupIP(){
+			serverIPAddress = prompt("Enter server's IP", "");
+			link = "http://" + serverIPAddress + ":8080/XServer/XServer?";}
+		
+	</script>
+  <script id = "Andrei">
       function Player(u,p){
           this.user=u;
           this.pass=p;
@@ -18,8 +26,7 @@
           this.status=new String();
       }
       var player=new Player();
-      //var link="http://5.12.252.136:8080/XServer/XServer?";
-      var link="http://localhost:8080/XServer/XServers?"
+      var link;
       var id;
 
       function buildBoard(v){
@@ -76,11 +83,15 @@
                   player.status="YOUWIN";
                   clearInterval(id);
                   alert('YOU WON!');
+				  resetBoard();
               }
               else if(move.responseText==="ENEMYTURN"){
                   player.status="WAIT";
-                  getBoard();
-              }
+                  getBoard();}
+				else if(move.responseText == "YOULOSE"){
+					getBoard();
+					alert("xD this game is only for pro noob")
+				}
               console.log(move.responseText);
           }
       }
@@ -185,6 +196,8 @@
       }
 
       window.onload=function(){
+			setupIP();
+			
           var loginButton=document.getElementById('login');
           loginButton.onclick=function(){
               var form=document.getElementsByTagName('form')[0];

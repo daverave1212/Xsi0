@@ -41,7 +41,9 @@ public class ClientFrame extends JFrame{
 
 	private JPanel gameOverPanelCard;
 	private JLabel gameOverLabel;
+	private JButton gameOverPlayAgain;
 	public JLabel getGameOverLabel() {return gameOverLabel;}
+	
 	
 	private int currentGameplayState = 2;
 	private boolean areButtonsFrozen = false;
@@ -115,7 +117,15 @@ public class ClientFrame extends JFrame{
 			revalidate();
 			repaint();}
 		else if(response.equals(Net.YOULOSE)) {
-			setStage(GAMEOVERPANEL);}
+			this.gameOverLabel.setText("How can you even lose at this game...?");
+			setStage(GAMEOVERPANEL);
+			revalidate();
+			repaint();}
+		else if(response.equals(Net.DRAW)) {
+			setStage(ClientFrame.GAMEOVERPANEL);
+			getGameOverLabel().setText("Draw. As expected...");
+			revalidate();
+			repaint();}
 		else if(response.equals(Net.NO)){
 			freezeButtons();
 			Runnable myTurnRun = () ->{
@@ -134,8 +144,17 @@ public class ClientFrame extends JFrame{
 								revalidate();
 								repaint();}
 							else if(resp.equals(Net.YOULOSE)) {
-								setStage(GAMEOVERPANEL);}
+								setStage(GAMEOVERPANEL);
+								gameOverLabel.setText("You're really bad at this game.");
+								revalidate();
+								repaint();}
+							else if(resp.equals(Net.DRAW)) {
+								setStage(GAMEOVERPANEL);
+								getGameOverLabel().setText("Draw. As expected...");
+								revalidate();
+								repaint();}
 							break;}
+						freezeButtons();
 						System.out.println("Asking for my turn: NO");}
 				} catch(Exception e) {e.printStackTrace();}};
 			Thread startAskingForTurn = new Thread(myTurnRun);
@@ -153,7 +172,7 @@ public class ClientFrame extends JFrame{
 				this.xoButtons[i][j].setEnabled(false);}}}
 		areButtonsFrozen = true;}
 	
-	private void unfreezeButtons() {
+	public void unfreezeButtons() {
 		if(areButtonsFrozen) {
 			System.out.println("Unfreezing buttons...");
 			for(int i = 0; i<=2; i++) { for(int j = 0; j<=2; j++) {
@@ -280,9 +299,21 @@ public class ClientFrame extends JFrame{
 	private void setupGameOverCard() {
 		gameOverPanelCard = new JPanel();
 		gameOverLabel = new JLabel();
+		gameOverPlayAgain = new JButton("Play some more of this shitty game");
 		gameOverPanelCard.add(gameOverLabel);
-		clientFrameCards.add(gameOverPanelCard, GAMEOVERPANEL);
-	}
+		gameOverPanelCard.add(gameOverPlayAgain);
+		gameOverPlayAgain.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String response;
+				try {
+					response = Net.request(Net.LOGIN, "password=" + XClient.getPassword());
+					if(response.equals(Net.LOGINACCEPTED)) {
+						XClient.handleActionRequest(Net.PLAY);}} 
+				catch (Exception e) {
+					System.err.println("ERROR: At play again. Something went wrong.");
+					e.printStackTrace();}}});
+		clientFrameCards.add(gameOverPanelCard, GAMEOVERPANEL);}
 	
 	private void setupMenuBar() {
 		gameMenuBar = new JMenuBar();
