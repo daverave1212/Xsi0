@@ -8,9 +8,9 @@ import java.sql.SQLException;
 public class Databases {
 
 	private static Connection getConnection() throws SQLException {
-		final String DB_URL = "jdbc:mysql://sql7.freemysqlhosting.net:3306/sql7240559";
-		final String DB_USER = "sql7240559";
-		final String DB_PASS = "lIFiguElyI";
+		final String DB_URL = "jdbc:mysql://192.185.175.131:3306/onlineb_andrei";
+		final String DB_USER = "onlineb_andrei";
+		final String DB_PASS = "6tUzwFu._wq,";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -151,16 +151,47 @@ public class Databases {
 		return 0;
 	}
 
-	public static boolean createAccount(String username, String password) {
-		
+	public static boolean createAccount(String username, String password) throws SQLException {
+
 		/*
 		 * Baga un cont nou in baza de date cu username si password.
 		 * Returneaza true daca a mers.
 		 * Returneaza false daca nu a mers (gen, usernameul deja exista)
-		 * 
+		 *
 		 */
-		
+		Connection database=null;
+		try {
+			database = getConnection();
+		} catch (SQLException e) {
+			System.out.println("Eroare de conexiune cu DB sql\n");
+			return false;
+		}
+		System.out.println(username + " " + password);
+		java.sql.PreparedStatement ps;
+		try {
+			ps = database.prepareStatement
+					("INSERT INTO onlineb_andrei.users(`user`, `pass`) VALUES (?,?)");
+			ps.setString(1, username);
+			ps.setString(2, password);
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			closeConnection(database);
+			return false;
+		}
+		int rs;
+		try {
+			rs = ps.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			closePS(ps);
+			closeConnection(database);
+			return false;
+		}
+		closePS(ps);
+		closeConnection(database);
+		if(rs==1)
+			return true;
 		return false;
 	}
-	
+
 }

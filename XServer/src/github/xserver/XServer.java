@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/XServer")
 public class XServer extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-      
-    public XServer() {
-        super();}
+
+	public XServer() {
+		super();}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -35,7 +35,7 @@ public class XServer extends HttpServlet {
 			System.out.println("ERROR HERE");
 		}
 	}
-	
+
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		String action	= request.getParameter("action");
 		if(action.equals( "RESET")) {
@@ -51,7 +51,7 @@ public class XServer extends HttpServlet {
 			String password = request.getParameter("password");
 			checkAndValidateLogin(username, password, response);}
 		if(action.equals( Net.REGISTER )) {
-			boolean accountCreated = Databases.createAccount(request.getParameter("username"), request.getParameter("passwprd"));
+			boolean accountCreated = Databases.createAccount(request.getParameter("username"), request.getParameter("password"));
 			if(accountCreated) {
 				response.getWriter().append(Net.REGISTERSUCCESS);}
 			else response.getWriter().append(Net.REGISTERFAIL);}
@@ -118,78 +118,78 @@ public class XServer extends HttpServlet {
 				disconnectPlayer(username);
 			}
 		}
-		
-		
+
+
 	}
-	
+
 	/* OTHER SERVER METHODS */
-	
+
 	public static HashMap<String, Player> playersConnected = new HashMap<String, Player>();
 	public static ArrayList<String> playersConnectedUsernames = new ArrayList<String>();
-	
+
 	public static void connectPlayer(String username) {
 		playersConnected.put(username, new Player());
 		playersConnectedUsernames.add(username);
 		playersConnected.get(username).setState(Player.IDLE);
 		playersConnected.get(username).setUsername(username);}
-	
+
 	public static void disconnectPlayer(String username) {
 		int indexInUsernames = findStringInArrayList(playersConnectedUsernames, username);
 		playersConnectedUsernames.remove(indexInUsernames);
 		playersConnected.remove(username);}
-	
+
 	public static int findStringInArrayList(ArrayList<String> a, String s) {
 		for(int i = 0; i<a.size(); i++) {
 			if(a.get(i).equals(s)) {
 				return i;}}
 		return -1;}
-	
-	 public static void checkAndValidateLogin(String username, String password, HttpServletResponse response) throws Exception{
+
+	public static void checkAndValidateLogin(String username, String password, HttpServletResponse response) throws Exception{
 		boolean isLoginAccepted = Databases.validateLogin(username, password);
 		if(isLoginAccepted) {
 			response.getWriter().append(Net.LOGINACCEPTED);
 			connectPlayer(username);}
 		else {
 			response.getWriter().append(Net.NO);}}
-	 
-	 public static void matchPlayers() {
-		 String p1username = "~";
-		 String p2username = "~";
-		 
-		 for(int i = 0; i<playersConnectedUsernames.size(); i++) {
-			 String currentUsername = playersConnectedUsernames.get(i);
-			 Player currentPlayer	= playersConnected.get(currentUsername);
-			 if(currentPlayer.getState() == Player.WAITING) {
-				 if(p1username == "~") {
-					 p1username = currentUsername;}
-				 else {
-					 p2username = currentUsername;}}}
-		 if(p2username != "~") {
-			 // 2 players were found!
-			 Player p1 = playersConnected.get(p1username);
-			 Player p2 = playersConnected.get(p2username);
-			 createGame(p1, p2);}
-		 else {/* Not enough players were found */}}
-	 
-	 public static void createGame(Player p1, Player p2) {
-		 p1.setGameReady(false);
-		 p2.setGameReady(false);
-		 p1.setState(Player.PLAYING);
-		 p2.setState(Player.PLAYING);
-		 p1.setEnemyPlayer(p2);
-		 p2.setEnemyPlayer(p1);
-		 p1.setGame(new Game());
-		 p2.setGame(p1.getGame());
-		 p1.getGame().setP1(p1);
-		 p2.getGame().setP2(p2);
-		 p1.setPiece(Game.X);
-		 p2.setPiece(Game.O);
-		 p1.setMyTurnNow(true);
-		 p2.setMyTurnNow(false);
-		 p1.setGameReady(true);
-		 p2.setGameReady(true);
-		 Databases.addGameForPlayer(p1.getUsername());
-		 Databases.addGameForPlayer(p2.getUsername());
-	 }
+
+	public static void matchPlayers() {
+		String p1username = "~";
+		String p2username = "~";
+
+		for(int i = 0; i<playersConnectedUsernames.size(); i++) {
+			String currentUsername = playersConnectedUsernames.get(i);
+			Player currentPlayer	= playersConnected.get(currentUsername);
+			if(currentPlayer.getState() == Player.WAITING) {
+				if(p1username == "~") {
+					p1username = currentUsername;}
+				else {
+					p2username = currentUsername;}}}
+		if(p2username != "~") {
+			// 2 players were found!
+			Player p1 = playersConnected.get(p1username);
+			Player p2 = playersConnected.get(p2username);
+			createGame(p1, p2);}
+		else {/* Not enough players were found */}}
+
+	public static void createGame(Player p1, Player p2) {
+		p1.setGameReady(false);
+		p2.setGameReady(false);
+		p1.setState(Player.PLAYING);
+		p2.setState(Player.PLAYING);
+		p1.setEnemyPlayer(p2);
+		p2.setEnemyPlayer(p1);
+		p1.setGame(new Game());
+		p2.setGame(p1.getGame());
+		p1.getGame().setP1(p1);
+		p2.getGame().setP2(p2);
+		p1.setPiece(Game.X);
+		p2.setPiece(Game.O);
+		p1.setMyTurnNow(true);
+		p2.setMyTurnNow(false);
+		p1.setGameReady(true);
+		p2.setGameReady(true);
+		Databases.addGameForPlayer(p1.getUsername());
+		Databases.addGameForPlayer(p2.getUsername());
+	}
 
 }
