@@ -22,6 +22,11 @@ public class Databases {
 		return myConn;
 	}
 
+	//Oprea-Cretu Andrei; Irimia David 241 10
+
+
+
+
 	private static void closeConnection(Connection myConn){
 		try {
 			myConn.close();
